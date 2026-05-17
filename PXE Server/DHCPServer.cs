@@ -1,12 +1,11 @@
-﻿using System;
+﻿using GitHub.JPMikkers.DHCP;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Text;
-
-using GitHub.JPMikkers.DHCP;
-
 using DHCP = GitHub.JPMikkers.DHCP;
 
 namespace PXE_Server
@@ -16,7 +15,7 @@ namespace PXE_Server
     {
         public IPAddress BindAddress { get; set; } = IPAddress.Parse("192.168.1.27");
         public Loader Loader { get; set; } = Loader.SYSLINUX;
-        public string HTTPBootFile {get;set;}
+        public string HTTPBootFile { get; set; }
 
         public DHCPServer(IPAddress address) : this(address, 67) { }
         public DHCPServer(IPAddress address, int port) : base(null)
@@ -53,7 +52,14 @@ namespace PXE_Server
 
         }
 
-        // https://www.ietf.org/assignments/dhcpv6-parameters/dhcpv6-parameters.xml#processor-architecture
+        // Client architecture codes: https://www.ietf.org/assignments/dhcpv6-parameters/dhcpv6-parameters.xml#processor-architecture
+        // 00 = BIOS/Legacy, 06 = x86 UEFI, 07 = x64 UEFI, 11 = ARM64 UEFI
+        //
+        // iPXE binary variants (from https://boot.ipxe.org/):
+        //   ipxe.efi     → iPXE drives the NIC directly (best performance, needs built-in driver)
+        //   snponly.efi  → UEFI firmware drives the NIC via SNP (best for modern/ARM64 hardware)
+        //   legacy.efi   → UEFI firmware via old UNDI path (best for old firmware)
+        // Pick the variant that works best for your hardware and rename it to match the filename below.
         private readonly Dictionary<(Loader, byte), string> avalibleArch = new Dictionary<(Loader, byte), string>()
         {
             { (Loader.SYSLINUX,00),"lpxelinux.0" },
@@ -63,36 +69,42 @@ namespace PXE_Server
 
             { (Loader.IPXE,00),"ipxe.pxe" },
             { (Loader.IPXE,07),"ipxe.efi" },
+            { (Loader.IPXE,11),"ipxe.efi" },
 
             { (Loader.SHIM_GRUB2,00),"grub2.pxe" },
             { (Loader.SHIM_GRUB2,07),"shimx64.efi" },
 
-            { (Loader.UEFI_HTTP,07),"shimx64.efi" }, 
+            { (Loader.UEFI_HTTP,07),"shimx64.efi" },
 
         };
         protected override void ProcessingReceiveMessage(DHCPMessage sourceMsg, DHCPMessage targetMsg)
         {
-            var bootFile = string.Empty;
+            string bootFile = string.Empty;
 
-
+            // Client is a UEFI HTTP Boot capable firmware - no TFTP involved at all.
+            // Return a full HTTP URL to the boot script.
+            // e.g. "http://192.168.1.21:8080/autoexec.ipxe"
             if (sourceMsg.isHTTP())
             {
                 bootFile = HTTPBootFile;
             }
-            else
-            if (sourceMsg.isIPXE())
+            // Client has already loaded iPXE (via TFTP in the previous step) and is now
+            // asking "what script should I run?". iPXE has built-in HTTP support so we
+            // return just the filename - iPXE will fetch it via TFTP from our server.
+            // e.g. "autoexec.ipxe"
+            else if (sourceMsg.isIPXE())
             {
                 // this is ipxe script
                 // bootFile = "http://192.168.1.27:8080/boot.ipxe";
                 bootFile = HTTPBootFile;
             }
-            else
-
-
-            if (sourceMsg.isPXE())
+            // Client is a raw PXE firmware that only speaks TFTP.
+            // Return the appropriate bootloader binary for its architecture,
+            // which will then chainload into iPXE. e.g. "ipxe.efi" for ARM64/x64 UEFI.
+            else if (sourceMsg.isPXE())
             {
-                var arch = sourceMsg.GetArch();
-                bootFile = avalibleArch[(Loader,arch)];
+                byte arch = sourceMsg.GetArch();
+                bootFile = avalibleArch[(Loader, arch)];
             }
 
 

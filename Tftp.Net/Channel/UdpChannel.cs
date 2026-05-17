@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Net.Sockets;
 using System.Net;
 using System.IO;
-using System.Diagnostics;
 
 namespace Tftp.Net.Channel
 {
@@ -50,6 +46,18 @@ namespace Tftp.Net.Channel
                     data = client.EndReceive(result, ref endpoint);
                 }
                 command = parser.Parse(data);
+            }
+            catch (SocketException ex) when (ex.ErrorCode == 10054)
+            {
+                // Client closed connection after receiving last block — this is normal, ignore it
+                // just restart listening
+                lock (this)
+                {
+                    if (client != null)
+                        client.BeginReceive(UdpReceivedCallback, null);
+                }
+
+                return; // <-- important: skip RaiseOnCommand and the BeginReceive at the bottom
             }
             catch (SocketException e)
             {

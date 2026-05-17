@@ -102,6 +102,9 @@ namespace GitHub.JPMikkers.DHCP
 
         public static void WriteZString(Stream s, string msg, int length)
         {
+            if (msg == null)
+                msg = string.Empty;
+
             if (msg.Length >= length)
             {
                 msg = msg.Substring(0, length - 1);
