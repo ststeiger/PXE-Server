@@ -33,6 +33,10 @@ autoexec.ipxe:
 ```
 #!ipxe
 
+echo ====================================================
+echo Loading Ubuntu 24.04 LTS (ARM64) Netboot Installer...
+echo ====================================================
+
 set server_ip 192.168.1.100
 set iso_path http://${server_ip}/ubuntu-24.04-arm64.iso
 
