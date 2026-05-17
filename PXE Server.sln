@@ -1,10 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30621.155
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36717.8
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PXE Server", "PXE Server\PXE Server.csproj", "{A9AEE220-2771-4A6B-B25C-01198BEC4D45}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tftp.Net", "Tftp.Net\Tftp.Net.csproj", "{AC5742F4-C024-41AE-B202-D8448B4A2220}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DHCPServer", "DHCPServer\DHCPServer.csproj", "{C3BAAC17-8781-4881-B03D-2D05E8E26851}"
@@ -23,16 +21,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "wwwroot", "wwwroot", "{C56D
 		wwwroot\wwwroot_syslinux.zip = wwwroot\wwwroot_syslinux.zip
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PXE-Server", "PXE-Server\PXE-Server.csproj", "{2ECBEFF9-8A9E-43F4-8C29-8A7913CA7389}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{A9AEE220-2771-4A6B-B25C-01198BEC4D45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A9AEE220-2771-4A6B-B25C-01198BEC4D45}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A9AEE220-2771-4A6B-B25C-01198BEC4D45}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A9AEE220-2771-4A6B-B25C-01198BEC4D45}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AC5742F4-C024-41AE-B202-D8448B4A2220}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AC5742F4-C024-41AE-B202-D8448B4A2220}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AC5742F4-C024-41AE-B202-D8448B4A2220}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -41,6 +37,10 @@ Global
 		{C3BAAC17-8781-4881-B03D-2D05E8E26851}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C3BAAC17-8781-4881-B03D-2D05E8E26851}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C3BAAC17-8781-4881-B03D-2D05E8E26851}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2ECBEFF9-8A9E-43F4-8C29-8A7913CA7389}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2ECBEFF9-8A9E-43F4-8C29-8A7913CA7389}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2ECBEFF9-8A9E-43F4-8C29-8A7913CA7389}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2ECBEFF9-8A9E-43F4-8C29-8A7913CA7389}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

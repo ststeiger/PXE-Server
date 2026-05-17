@@ -1,18 +1,12 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Net;
-
-using DHCP = GitHub.JPMikkers.DHCP;
-
+﻿
 namespace PXE_Server
 {
 
-    public class PXEServer : IDisposable
+    public class PXEServer 
+        : System.IDisposable
     {
-        public IPAddress BindAddress { get; set; }
-        public IPAddress NetMask { get; set; }
+        public System.Net.IPAddress BindAddress { get; set; }
+        public System.Net.IPAddress NetMask { get; set; }
 
         public int DHCPPort { get; set; }
         public int HTTPPort { get; set; }
@@ -20,19 +14,19 @@ namespace PXE_Server
 
         public string ServerDirectory { get; set; }
 
-        public string HTTPBootFile { get; set; }
+        public string? HTTPBootFile { get; set; }
 
-        private TFTPServer tftp_server;
-        private DHCPServer dhcp_server;
-        private HttpFileServer http_server;
+        private TFTPServer? tftp_server;
+        private DHCPServer? dhcp_server;
+        private HttpFileServer? http_server;
 
-        private Loader loader;
+        private Loader? loader;
 
 
         public PXEServer(PXEConfig config)
         {
-            BindAddress = IPAddress.Parse(config.BindAddress);
-            NetMask = IPAddress.Parse(config.NetMask);
+            BindAddress = System.Net.IPAddress.Parse(config.BindAddress);
+            NetMask = System.Net.IPAddress.Parse(config.NetMask);
 
             DHCPPort = config.DHCPPort;
             HTTPPort = config.HTTPPort;
@@ -41,10 +35,10 @@ namespace PXE_Server
             HTTPBootFile = config.HTTPBootFile;
 
             ServerDirectory = config.ServerDirectory;
-            loader = Enum.Parse<Loader>(config.Loader);
+            loader = System.Enum.Parse<Loader>(config.Loader);
             if(config.Verbose)
             {
-                Trace.Listeners.Add(new ConsoleTraceListener());
+                System.Diagnostics.Trace.Listeners.Add(new System.Diagnostics.ConsoleTraceListener());
             }
            
 
@@ -54,10 +48,10 @@ namespace PXE_Server
             DHCPPort = 67;
             HTTPPort = 80;
             TFTPPort = 69;
-            ServerDirectory = Path.Combine(Environment.CurrentDirectory, "wwwroot");
+            ServerDirectory = System.IO.Path.Combine(System.Environment.CurrentDirectory, "wwwroot");
 
-            BindAddress = IPAddress.Parse("192.168.1.27");
-            NetMask = IPAddress.Parse("255.255.255.0");
+            BindAddress = System.Net.IPAddress.Parse("192.168.1.27");
+            NetMask = System.Net.IPAddress.Parse("255.255.255.0");
 
          
         }
@@ -71,14 +65,19 @@ namespace PXE_Server
 
             tftp_server = new TFTPServer(BindAddress, TFTPPort, ServerDirectory);
 
-            var net = new IPSegment(BindAddress.ToString(), NetMask.ToString());
+            IPSegment net = new IPSegment(BindAddress.ToString(), NetMask.ToString());
 
             dhcp_server = new DHCPServer(BindAddress, DHCPPort);
             dhcp_server.Loader = loader;
             dhcp_server.HTTPBootFile = HTTPBootFile;
-            dhcp_server.SubnetMask = IPAddress.Parse("255.255.255.0");
-            dhcp_server.PoolStart = net.Hosts().First().ToIpAddress();
-            dhcp_server.PoolEnd = net.Hosts().Last().ToIpAddress();
+            dhcp_server.SubnetMask = System.Net.IPAddress.Parse("255.255.255.0");
+
+            // dhcp_server.PoolStart = net.Hosts().First().ToIpAddress();
+            // dhcp_server.PoolEnd = net.Hosts().Last().ToIpAddress();
+
+            dhcp_server.PoolStart = (net.NetworkAddress + 1).ToIpAddress();
+            dhcp_server.PoolEnd = (net.BroadcastAddress - 1).ToIpAddress();
+
             dhcp_server.Start();
         }
         public void Stop()
@@ -91,7 +90,6 @@ namespace PXE_Server
         }
 
 
-        #region dispose
         private bool disposedValue;
         protected virtual void Dispose(bool disposing)
         {
@@ -119,8 +117,9 @@ namespace PXE_Server
         {
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: true);
-            GC.SuppressFinalize(this);
+            System.GC.SuppressFinalize(this);
         }
-        #endregion
+
+
     }
 }

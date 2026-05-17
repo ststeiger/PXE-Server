@@ -21,68 +21,62 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net;
-using System.Text;
-
 namespace GitHub.JPMikkers.DHCP
 {
     public class ParseHelper
     {
-        public static IPAddress ReadIPAddress(Stream s)
+        public static System.Net.IPAddress ReadIPAddress(System.IO.Stream s)
         {
             byte[] bytes = new byte[4];
             s.Read(bytes, 0, bytes.Length);
-            return new IPAddress(bytes);
+            return new System.Net.IPAddress(bytes);
         }
 
-        public static void WriteIPAddress(Stream s, IPAddress v)
+        public static void WriteIPAddress(System.IO.Stream s, System.Net.IPAddress v)
         {
             byte[] bytes = v.GetAddressBytes();
             s.Write(bytes, 0, bytes.Length);
         }
 
-        public static byte ReadUInt8(Stream s)
+        public static byte ReadUInt8(System.IO.Stream s)
         {
-            BinaryReader br = new BinaryReader(s);
+            System.IO.BinaryReader br = new System.IO.BinaryReader(s);
             return br.ReadByte();
         }
 
-        public static void WriteUInt8(Stream s, byte v)
+        public static void WriteUInt8(System.IO.Stream s, byte v)
         {
-            BinaryWriter bw = new BinaryWriter(s);
+            System.IO.BinaryWriter bw = new System.IO.BinaryWriter(s);
             bw.Write(v);
         }
 
-        public static ushort ReadUInt16(Stream s)
+        public static ushort ReadUInt16(System.IO.Stream s)
         {
-            BinaryReader br = new BinaryReader(s);
-            return (ushort)IPAddress.NetworkToHostOrder((short)br.ReadUInt16());
+            System.IO.BinaryReader br = new System.IO.BinaryReader(s);
+            return (ushort)System.Net.IPAddress.NetworkToHostOrder((short)br.ReadUInt16());
         }
 
-        public static void WriteUInt16(Stream s, ushort v)
+        public static void WriteUInt16(System.IO.Stream s, ushort v)
         {
-            BinaryWriter bw = new BinaryWriter(s);
-            bw.Write((ushort)IPAddress.HostToNetworkOrder((short)v));
+            System.IO.BinaryWriter bw = new System.IO.BinaryWriter(s);
+            bw.Write((ushort)System.Net.IPAddress.HostToNetworkOrder((short)v));
         }
 
-        public static uint ReadUInt32(Stream s)
+        public static uint ReadUInt32(System.IO.Stream s)
         {
-            BinaryReader br = new BinaryReader(s);
-            return (uint)IPAddress.NetworkToHostOrder((int)br.ReadUInt32());
+            System.IO.BinaryReader br = new System.IO.BinaryReader(s);
+            return (uint)System.Net.IPAddress.NetworkToHostOrder((int)br.ReadUInt32());
         }
 
-        public static void WriteUInt32(Stream s, uint v)
+        public static void WriteUInt32(System.IO.Stream s, uint v)
         {
-            BinaryWriter bw = new BinaryWriter(s);
-            bw.Write((uint)IPAddress.HostToNetworkOrder((int)v));
+            System.IO.BinaryWriter bw = new System.IO.BinaryWriter(s);
+            bw.Write((uint)System.Net.IPAddress.HostToNetworkOrder((int)v));
         }
 
-        public static string ReadZString(Stream s)
+        public static string ReadZString(System.IO.Stream s)
         {
-            StringBuilder sb = new StringBuilder();
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
             int c = s.ReadByte();
             while (c>0)
             {
@@ -92,15 +86,15 @@ namespace GitHub.JPMikkers.DHCP
             return sb.ToString();
         }
 
-        public static void WriteZString(Stream s, string msg)
+        public static void WriteZString(System.IO.Stream s, string msg)
         {
-            TextWriter tw = new StreamWriter(s, Encoding.ASCII);
+            System.IO.TextWriter tw = new System.IO.StreamWriter(s, System.Text.Encoding.ASCII);
             tw.Write(msg);
             tw.Flush();
             s.WriteByte(0);
         }
 
-        public static void WriteZString(Stream s, string msg, int length)
+        public static void WriteZString(System.IO.Stream s, string msg, int length)
         {
             if (msg == null)
                 msg = string.Empty;
@@ -110,7 +104,7 @@ namespace GitHub.JPMikkers.DHCP
                 msg = msg.Substring(0, length - 1);
             }
 
-            TextWriter tw = new StreamWriter(s, Encoding.ASCII);
+            System.IO.TextWriter tw = new System.IO.StreamWriter(s, System.Text.Encoding.ASCII);
             tw.Write(msg);
             tw.Flush();
 
@@ -121,9 +115,9 @@ namespace GitHub.JPMikkers.DHCP
             }
         }
 
-        public static string ReadString(Stream s, int maxLength)
+        public static string ReadString(System.IO.Stream s, int maxLength)
         {
-            StringBuilder sb = new StringBuilder();
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
             int c = s.ReadByte();
             while (c > 0 && sb.Length < maxLength)
             {
@@ -133,19 +127,19 @@ namespace GitHub.JPMikkers.DHCP
             return sb.ToString();
         }
 
-        public static string ReadString(Stream s)
+        public static string ReadString(System.IO.Stream s)
         {
             return ReadString(s, 16*1024);
         }
 
-        public static void WriteString(Stream s, string msg)
+        public static void WriteString(System.IO.Stream s, string msg)
         {
             WriteString(s, false, msg);
         }
 
-        public static void WriteString(Stream s, bool zeroTerminated, string msg)
+        public static void WriteString(System.IO.Stream s, bool zeroTerminated, string msg)
         {
-            TextWriter tw = new StreamWriter(s, Encoding.ASCII);
+            System.IO.TextWriter tw = new System.IO.StreamWriter(s, System.Text.Encoding.ASCII);
             tw.Write(msg);
             tw.Flush();
             if(zeroTerminated) s.WriteByte(0);
