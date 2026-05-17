@@ -10,6 +10,43 @@ Available loaders:
 - SHIM_GRUB2 (bios, efi with secure boot)
 - UEFI_HTTP (efi-only, not tested on real hardware)
 
+## Tested
+
+Works to netboot the HP ZGX Nano G1n AI Station. <br />
+That is to say NVIDIA ZGX-OS for NVIDIA Blackwell. <br />
+You can find the iPXE bootloaders here at https://boot.ipxe.org/. <br />
+For an ARM64 system like the Blackwell, you usually want the arm64-efi/snponly.efi and rename to ipxe.efi (if you or the DHCP set the filename to ipxe.efi). <br />
+Then you find the Ubuntu netboot images here: https://cdimage.ubuntu.com/ubuntu/releases/24.04/release/netboot/arm64/<br />
+Note that for the HP ZGX Nano G1n AI Station you can also download the boot ISO from HP: <br />
+https://support.hp.com/hk-en/document/ish_14254582-14254596-16<br />
+Direct link per 2026-05-17: <br />
+https://ftp.hp.com/pub/softpaq/sp165001-165500/sp165496.iso
+
+Mount the ISO on Linux or write it to USB with Rufus. 
+To get the network boot files: 
+Extract vmlinuz and initrd: Look inside the ISO (usually in /casper/). 
+You need to copy these two files to your web server or TFTP directory.
+Also the entire ISO File: Move the entire .iso file to a directory accessible via HTTP on your network.
+
+autoexec.ipxe:
+
+```
+#!ipxe
+
+set server_ip 192.168.1.100
+set iso_path http://${server_ip}/ubuntu-24.04-arm64.iso
+
+# Load the kernel and initrd from your server
+kernel http://${server_ip}/vmlinuz
+initrd http://${server_ip}/initrd
+
+# The 'url' parameter is the "ISO Method" secret sauce
+imgargs vmlinuz initrd=initrd ip=dhcp url=${iso_path} cloud-config-url=/dev/null
+
+boot
+```
+
+
 ## TODO
 
 - Rewrite the hard-coded DHCP boot filename to support user configuration
